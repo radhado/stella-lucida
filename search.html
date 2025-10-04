@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Stella Lucida</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap');
+
+:root {
+  --deep-navy: #122233;
+  --blood-orange: #d14933; /* Softened, less intense blood orange */
+  --pale-bg: #1a2941;
+  --result-bg: #172a41;
+  --hover-bg: #2f1a11;
+  --white: #f5fafd;
+}
+
+/* Reset and base styles */
+body {
+  font-family: 'Quicksand', Arial, sans-serif;
+  margin: 0;
+  background: var(--deep-navy);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sticky header */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background-color: var(--pale-bg);
+  padding: 24px 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+}
+
+/* Left aligned title */
+.header-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--blood-orange);
+  letter-spacing: 1.5px;
+  user-select: none;
+  font-family: 'Quicksand', Arial, sans-serif;
+  border-radius: 12px;
+  margin: 0;
+}
+
+/* Toggle button for home/search */
+#toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  user-select: none;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#toggle-button svg {
+  stroke: white;
+  stroke-width: 2;
+  fill: none;
+  width: 28px;
+  height: 28px;
+}
+
+button.category-button {
+  display: block;
+  background: var(--blood-orange);
+  border: none;
+  border-radius: 28px;
+  color: var(--white);
+  padding: 22px 48px;
+  font-weight: 700;
+  font-size: 1.4rem;
+  margin: 24px auto;
+  cursor: pointer;
+  width: 260px;
+  font-family: 'Quicksand', Arial, sans-serif;
+  transition: background 0.3s;
+  border: 2px solid transparent;
+  text-align: center;
+}
+
+button.category-button:hover {
+  background: #b73c27; /* slightly darker hover */
+}
+
+#homepage {
+  width: 100%;
+  max-width: 660px;
+  margin-top: 60px;
+  text-align: center;
+}
+
+#search-page {
+  display: none;
+  max-width: 860px;
+  width: 100%;
+  background: var(--pale-bg);
+  border-radius: 32px;
+  box-shadow: 0 10px 40px #1a203c43;
+  padding: 34px 20px;
+  margin: 48px 0 64px 0;
+  display: flex;
+  gap: 36px;
+  box-sizing: border-box;
+}
+
+#left-panel, #right-panel {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+#left-panel {
+  padding: 0 14px;
+}
+
+#right-panel {
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 32px 14px;
+  background: var(--deep-navy);
+  border-radius: 28px;
+  min-height: 320px;
+  max-height: 76vh;
+  box-shadow: 0 0 16px var(--blood-orange);
+  color: var(--white);
+  box-sizing: border-box;
+  text-align: right;
+  overflow-y: auto;
+}
+
+/* Placeholder text in detail panel when empty */
+#detail-title:empty::before {
+  content: "Select an entry to view details.";
+  display: block;
+  text-align: center;
+  color: var(--blood-orange);
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 13px;
+}
+
+/* Search input styling */
+input[type="search"] {
+  padding: 16px 22px;
+  font-size: 1.16rem;
+  border-radius: 24px;
+  border: none;
+  outline: none;
+  background: #1e2b42;
+  color: var(--white);
+  font-weight: 600;
+  font-family: inherit;
+  margin-bottom: 18px;
+  box-shadow: 0 3px 12px rgba(209, 73, 51, 0.23);
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+input[type="search"]:focus:enabled {
+  box-shadow: 0 10px 36px rgba(209, 73, 51, 0.47);
+  background: #2c3e59;
+}
+
+input[type="search"]:disabled {
+  background: #283450;
+  color: #5d768f;
+}
+
+/* Results list */
+#results {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.result-item {
+  background: var(--result-bg);
+  border-radius: 19px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  box-shadow: 0 3px 14px #19244435;
+  border: 2px solid transparent;
+  padding: 18px 20px;
+  transition: background 0.16s, border-color 0.18s, color 0.13s;
+  box-sizing: border-box;
+  color: var(--white);
+}
+
+.result-item:hover,
+.result-item.selected {
+  background: var(--hover-bg);
+  border-color: var(--blood-orange);
+  color: var(--blood-orange);
+}
+
+.title {
+  font-weight: 700;
+  font-size: 1.18rem;
+  margin-bottom: 7px;
+  color: var(--blood-orange);
+  letter-spacing: 0.14em;
+}
+
+.result-item.selected .title,
+.result-item:hover .title {
+  color: var(--blood-orange);
+}
+
+.summary {
+  font-size: 1.02rem;
+  line-height: 1.5;
+  color: var(--white);
+}
+
+/* Detail panel */
+#detail-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 13px;
+  color: var(--blood-orange);
+  letter-spacing: 0.08em;
+}
+
+#detail-summary {
+  font-size: 1.05rem;
+  line-height: 1.52;
+  margin-bottom: 15px;
+}
+
+#detail-link a {
+  font-size: 1.08rem;
+  color: var(--deep-navy);
+  text-decoration: none;
+  font-weight: 700;
+  padding: 8px 18px;
+  border-radius: 18px;
+  background: var(--blood-orange);
+  box-shadow: 0 2px 8px rgba(209, 73, 51, 0.2);
+  transition: background 0.15s, color 0.15s;
+  display: inline-block;
+}
+
+#detail-link a:hover {
+  color: var(--blood-orange);
+  background: var(--white);
+}
+
+/* Loading message */
+#loading-message {
+  font-style: italic;
+  color: var(--blood-orange);
+  text-align: center;
+  margin-top: 44px;
+  font-size: 1.12rem;
+}
+
+/* Category page */
+#category-page {
+  display: none;
+  max-width: 860px;
+  width: 100%;
+  background: var(--pale-bg);
+  border-radius: 32px;
+  box-shadow: 0 10px 40px #1a203c43;
+  padding: 34px 20px;
+  margin: 48px 0 64px 0;
+  box-sizing: border-box;
+}
+
+#category-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--blood-orange);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.category-list .result-item {
+  cursor: default;
+  padding-bottom: 8px;
+}
+
+.category-list .result-item:hover,
+.category-list .result-item.selected {
+  background: var(--result-bg);
+  border-color: transparent;
+  color: var(--white);
+}
+
+.category-list .result-link {
+  margin-top: 4px;
+  font-size: 0.96rem;
+  color: var(--blood-orange);
+  font-weight: 600;
+  display: inline-block;
+  text-decoration: underline;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 9px;
+  background: #1b2646;
+  border-radius: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2b405a;
+  border-radius: 12px;
+}
+
+@media (max-width: 900px) {
+  #search-page {
+    flex-direction: column;
+    gap: 18px;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title" id="top-title">Stella Lucida</div>
+  <button id="toggle-button" aria-label="Toggle search/homepage">
+    <svg id="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" width="28" height="28">
+      <circle cx="11" cy="11" r="7"></circle>
+      <line x1="16" y1="16" x2="22" y2="22"></line>
+    </svg>
+  </button>
+</header>
+
+<div id="homepage" role="main" aria-label="Stella Lucida Homepage">
+  <div id="category-buttons-container"></div>
+</div>
+
+<div id="search-page" role="main" aria-label="NASA Experiments Search Interface">
+  <section id="left-panel">
+    <input type="search" id="search-input" placeholder="Search through NASA experiments" autocomplete="off" disabled aria-label="Search experiments" />
+    <div id="results" aria-live="polite"><p id="loading-message"></p></div>
+  </section>
+  <section id="right-panel" aria-live="polite" aria-atomic="true">
+    <div id="detail-title"></div>
+    <div id="detail-summary"></div>
+    <div id="detail-link"></div>
+  </section>
+</div>
+
+<div id="category-page" role="main" aria-label="Category Experiments Page">
+  <div id="category-title"></div>
+  <div class="category-list"></div>
+</div>
+
+<script>
+const toggleButton = document.getElementById('toggle-button');
+const homepage = document.getElementById('homepage');
+const searchPage = document.getElementById('search-page');
+const categoryPage = document.getElementById('category-page');
+const topTitle = document.getElementById('top-title');
+
+const categoryButtonsContainer = document.getElementById('category-buttons-container');
+
+const searchInput = document.getElementById('search-input');
+const resultsDiv = document.getElementById('results');
+const detailTitle = document.getElementById('detail-title');
+const detailSummary = document.getElementById('detail-summary');
+const detailLink = document.getElementById('detail-link');
+
+const categoryTitle = document.getElementById('category-title');
+const categoryList = document.querySelector('.category-list');
+
+let jsonData = [];
+let selectedIndex = -1;
+let currentView = 'home'; // 'home', 'search', 'category'
+let currentCategory = '';
+
+const icons = {
+  search: `<circle cx="11" cy="11" r="7" />
+           <line x1="16" y1="16" x2="22" y2="22" />`,
+  home: `<path d="M3 12 L12 3 L21 12 V20 A1 1 0 0 1 20 21 H4 A1 1 0 0 1 3 20 Z" />`
+};
+
+const categories = [
+  {name: 'Neuroscience', keywords: ['neuro', 'brain', 'cognitive', 'nervous', 'neurons']},
+  {name: 'Immune System', keywords: ['immune', 'immunolog', 'infection', 'inflammation', 'cytokine', 'virus', 'microbiome']},
+  {name: 'Plants', keywords: ['plant', 'arabidopsis', 'root', 'photosynthesis', 'chloroplast', 'gravitropism', 'seedling']},
+  {name: 'Microbes', keywords: ['microbe', 'bacteria', 'fungus', 'yeast', 'pseudomonas', 'salmonella', 'candida']},
+  {name: 'Muscle & Physiology', keywords: ['muscle', 'skeletal', 'physiology', 'mitochondria', 'stem cell', 'muscle stem', 'atrophy']},
+  {name: 'Circadian Rhythm & Sleep', keywords: ['circadian', 'sleep', 'melatonin', 'clock', 'rhythm', 'chronobiolog']},
+  {name: 'Cancer & Disease', keywords: ['cancer', 'tumor', 'carcinoma', 'dna damage', 'radiation', 'disease']},
+  {name: 'Genetics & Epigenetics', keywords: ['genetic', 'epigenetic', 'transcriptomic', 'genome', 'omics', 'rna', 'gene expression', 'methylation']},
+  {name: 'Space Biology', keywords: ['spaceflight', 'microgravity', 'space', 'astro', 'space travel', 'space environment']}
+];
+
+function assignCategory(entry) {
+  const text = (entry.title + ' ' + entry.summary).toLowerCase();
+  for(const cat of categories) {
+    for(const kw of cat.keywords) {
+      if(text.includes(kw)) return cat.name;
+    }
+  }
+  return 'Other';
+}
+
+function buildCategoryButtons() {
+  const catNames = categories.map(c => c.name).concat('Other');
+  categoryButtonsContainer.innerHTML = '';
+  catNames.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'category-button';
+    btn.textContent = cat;
+    btn.addEventListener('click', () => showCategoryPage(cat));
+    categoryButtonsContainer.appendChild(btn);
+  });
+}
+
+function showView(view) {
+  currentView = view;
+  homepage.style.display = (view === 'home') ? 'block' : 'none';
+  searchPage.style.display = (view === 'search') ? 'flex' : 'none';
+  categoryPage.style.display = (view === 'category') ? 'block' : 'none';
+  selectedIndex = -1;
+  clearResults();
+  clearDetail();
+
+  if(view === 'home') {
+    toggleButton.innerHTML = '';
+    toggleButton.appendChild(createSVGIcon('search'));
+    topTitle.textContent = 'Stella Lucida';
+  } else if(view === 'search') {
+    toggleButton.innerHTML = '';
+    toggleButton.appendChild(createSVGIcon('home'));
+    topTitle.textContent = 'Stella Lucida';
+    searchInput.value = '';
+    searchInput.disabled = false;
+    searchInput.focus();
+  } else if(view === 'category') {
+    toggleButton.innerHTML = '';
+    toggleButton.appendChild(createSVGIcon('home'));
+    topTitle.textContent = 'Stella Lucida - ' + currentCategory;
+  }
+}
+
+function createSVGIcon(name) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox","0 0 24 24");
+  svg.setAttribute("aria-hidden","true");
+  svg.setAttribute("focusable","false");
+  svg.style.width = "28px";
+  svg.style.height = "28px";
+  svg.style.stroke = "white";
+  svg.style.fill = "none";
+  svg.style.strokeWidth = "2";
+  svg.style.strokeLinecap = "round";
+  svg.style.strokeLinejoin = "round";
+  svg.innerHTML = icons[name];
+  return svg;
+}
+
+toggleButton.addEventListener('click', () => {
+  if (currentView === 'home') {
+    showView('search');
+  } else {
+    showView('home');
+  }
+});
+
+function clearResults() {
+  resultsDiv.innerHTML = '';
+}
+
+function clearDetail() {
+  detailTitle.textContent = ''; // triggers placeholder text
+  detailSummary.textContent = '';
+  detailLink.innerHTML = '';
+}
+
+function renderDetail(entry) {
+  detailTitle.textContent = entry.title;
+  detailSummary.textContent = entry.summary;
+  detailLink.innerHTML = `<a href="${entry.link}" target="_blank" rel="noopener noreferrer">Read more</a>`;
+}
+
+function searchEntries(query) {
+  if (!query.trim()) {
+    clearResults();
+    clearDetail();
+    selectedIndex = -1;
+    return;
+  }
+  const lcQuery = query.toLowerCase();
+  const matches = jsonData.filter(entry =>
+    entry.title.toLowerCase().includes(lcQuery) ||
+    entry.summary.toLowerCase().includes(lcQuery)
+  );
+  clearResults();
+  clearDetail();
+  selectedIndex = -1;
+
+  if (matches.length === 0) {
+    resultsDiv.innerHTML = "<p>No results found.</p>";
+    return;
+  }
+
+  matches.forEach((entry, index) => {
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.tabIndex = 0;
+    div.setAttribute('role', 'button');
+    div.setAttribute('aria-pressed', 'false');
+
+    div.innerHTML = `
+      <div class="title">${entry.title}</div>
+      <div class="summary">${entry.summary.substring(0, 150)}...</div>
+    `;
+
+    div.addEventListener('click', () => {
+      selectEntry(index, matches);
+    });
+    div.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectEntry(index, matches);
+      }
+    });
+
+    resultsDiv.appendChild(div);
+  });
+}
+
+function selectEntry(index, matches) {
+  const items = resultsDiv.querySelectorAll('.result-item');
+  if (selectedIndex >= 0 && items[selectedIndex]) {
+    items[selectedIndex].classList.remove('selected');
+    items[selectedIndex].setAttribute('aria-pressed', 'false');
+  }
+  selectedIndex = index;
+  items[selectedIndex].classList.add('selected');
+  items[selectedIndex].setAttribute('aria-pressed', 'true');
+
+  const entry = matches[selectedIndex];
+  renderDetail(entry);
+  document.getElementById('right-panel').scrollTop = 0;
+}
+
+function showCategoryPage(category) {
+  currentCategory = category;
+  showView('category');
+  categoryTitle.textContent = category + ' Experiments';
+  categoryList.innerHTML = '';
+
+  const items = jsonData.filter(e => assignCategory(e) === category);
+
+  if(items.length === 0) {
+    categoryList.innerHTML = '<p>No experiments found in this category.</p>';
+    return;
+  }
+
+  items.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    div.tabIndex = -1;
+    div.innerHTML = `
+      <div class="title">${entry.title}</div>
+      <div class="summary">${entry.summary}</div>
+      <a href="${entry.link}" target="_blank" rel="noopener noreferrer" class="result-link">Read more</a>
+    `;
+    categoryList.appendChild(div);
+  });
+}
+
+fetch('output.json')
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  })
+  .then(data => {
+    jsonData = data;
+    buildCategoryButtons();
+    showView('home');
+  })
+  .catch(error => {
+    homepage.innerHTML = `<p style="color: var(--blood-orange); text-align:center; margin-top:2rem;">Error loading data: ${error.message}</p>`;
+  });
+
+searchInput.addEventListener('input', e => {
+  searchEntries(e.target.value);
+});
+</script>
+
+</body>
+</html>
